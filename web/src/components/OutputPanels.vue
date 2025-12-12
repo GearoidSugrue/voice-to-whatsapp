@@ -5,6 +5,7 @@ import { useWhatsappLink } from '../composables/useWhatsappLink'
 const props = defineProps<{
   result?: TranscriptResult
   recipient: string
+  error?: string | null
 }>()
 
 const whatsappLink = useWhatsappLink(props.recipient, props.result)
@@ -14,7 +15,13 @@ const whatsappLink = useWhatsappLink(props.recipient, props.result)
   <section class="panel">
     <p class="eyebrow">Output</p>
     <h3>Transcript & polished text</h3>
-    <div v-if="result" class="stack">
+
+    <div v-if="error" class="error">
+      <p class="label">Error</p>
+      <p>{{ error }}</p>
+    </div>
+
+    <div v-else-if="result" class="stack">
       <div class="card">
         <p class="label">Transcript</p>
         <p>{{ result.transcript }}</p>
@@ -62,5 +69,13 @@ const whatsappLink = useWhatsappLink(props.recipient, props.result)
   align-items: center;
   gap: 8px;
   width: fit-content;
+}
+
+.error {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
 }
 </style>

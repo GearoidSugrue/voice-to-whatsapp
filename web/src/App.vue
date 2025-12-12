@@ -67,12 +67,7 @@ const submitAudio = async () => {
         @submit="submitAudio"
       />
       <RecipientChooser v-model="recipient" />
-      <OutputPanels :result="lastResult" :recipient="recipient" />
-
-      <div v-if="apiError" class="panel alert">
-        <p class="eyebrow">Error</p>
-        <p>{{ apiError }}</p>
-      </div>
+      <OutputPanels :result="lastResult" :recipient="recipient" :error="apiError" />
     </main>
   </div>
 </template>
