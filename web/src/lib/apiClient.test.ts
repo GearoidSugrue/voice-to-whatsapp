@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { mswServer } from '../setupTests'
 import { polishAudio } from './apiClient'
@@ -6,10 +6,6 @@ import { polishAudio } from './apiClient'
 const API_URL = 'http://localhost:9999'
 
 describe('apiClient polishAudio', () => {
-  afterEach(() => {
-    mswServer.resetHandlers()
-  })
-
   it('sends multipart audio and returns parsed response', async () => {
     mswServer.use(
       http.post(`${API_URL}/polish-audio`, async ({ request }) => {
