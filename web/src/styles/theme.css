@@ -115,7 +115,7 @@ button {
 
 .content {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 
@@ -128,40 +128,10 @@ button {
   backdrop-filter: blur(6px);
 }
 
-.hero h2 {
-  margin: 6px 0 8px;
-  font-size: 24px;
-}
-
-.lede {
-  margin: 0 0 16px;
-  color: var(--muted);
-  max-width: 640px;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(14, 165, 233, 0.12);
-  color: var(--accent-strong);
-  font-weight: 600;
-  font-size: 13px;
-}
-
-.todo ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
-  color: var(--muted);
+.grid {
   display: grid;
-  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
 }
 
 @media (max-width: 900px) {
