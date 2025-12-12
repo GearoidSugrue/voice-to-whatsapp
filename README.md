@@ -18,3 +18,5 @@ Environment:
 - `POLISHER_SECRET` (required)
 - `OPENAI_API_KEY` (required)
 - `PORT` (optional, defaults to 3001)
+- `LOG_LEVEL` (optional, defaults to `info`)
+- `CORS_ORIGINS` (optional, comma-separated origins; if unset, CORS allows all)
