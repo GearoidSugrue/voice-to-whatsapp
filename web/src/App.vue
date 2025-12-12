@@ -20,7 +20,6 @@ const isRecording = computed(() => recorderState.value === 'recording')
 const isProcessing = computed(() => recorderState.value === 'processing')
 const hasAudio = computed(() => !!audioBlob.value)
 const hasAuth = computed(() => !!authToken.value.trim())
-const hasRecipient = computed(() => !!recipient.value.trim())
 
 const submitAudio = async () => {
   if (!audioBlob.value || !authToken.value) return
@@ -59,7 +58,6 @@ const submitAudio = async () => {
         :state="recorderState"
         :has-audio="hasAudio"
         :has-auth="hasAuth"
-        :has-recipient="hasRecipient"
         :is-submitting="isSubmitting"
         :is-recording="isRecording"
         :is-processing="isProcessing"
@@ -74,15 +72,6 @@ const submitAudio = async () => {
       <div v-if="apiError" class="panel alert">
         <p class="eyebrow">Error</p>
         <p>{{ apiError }}</p>
-      </div>
-
-      <div v-if="!hasAuth || !hasRecipient || !hasAudio" class="panel hint">
-        <p class="eyebrow">Quick tips</p>
-        <ul>
-          <li v-if="!hasAuth">Add your polisher secret to enable sending.</li>
-          <li v-if="!hasRecipient">Set a recipient so the WhatsApp link can be built.</li>
-          <li v-if="!hasAudio">Record something to activate the send button.</li>
-        </ul>
       </div>
     </main>
   </div>

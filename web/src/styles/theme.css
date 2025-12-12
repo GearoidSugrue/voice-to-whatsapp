@@ -190,14 +190,6 @@ body {
   border-color: var(--accent);
 }
 
-.hint ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
-  color: var(--muted);
-  display: grid;
-  gap: 6px;
-}
-
 @media (max-width: 900px) {
   .content {
     grid-template-columns: 1fr;
