@@ -1,8 +1,11 @@
 import express from "express";
+import { requestLogger } from "./lib/logger";
 import { port } from "./lib/config";
 import polishAudioRouter from "./routes/polish-audio";
 
 const app = express();
+
+app.use(requestLogger);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
