@@ -1,9 +1,18 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { TranscriptResult } from '../types'
 
-defineProps<{
+const props = defineProps<{
   result?: TranscriptResult
+  recipient: string
 }>()
+
+const whatsappLink = computed(() => {
+  if (!props.result || !props.recipient) return ''
+  const encoded = encodeURIComponent(props.result.polished)
+  const number = props.recipient.replace(/\s+/g, '')
+  return `https://wa.me/${number}?text=${encoded}`
+})
 </script>
 
 <template>
@@ -19,6 +28,9 @@ defineProps<{
         <p class="label">Polished</p>
         <p>{{ result.polished }}</p>
       </div>
+      <a v-if="whatsappLink" class="cta" :href="whatsappLink" target="_blank" rel="noreferrer">
+        Open in WhatsApp
+      </a>
     </div>
     <p v-else class="muted">Awaiting an upload. Results will appear here.</p>
   </section>
@@ -47,5 +59,20 @@ defineProps<{
 
 .muted {
   color: var(--muted);
+}
+
+.cta {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  width: fit-content;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 </style>
