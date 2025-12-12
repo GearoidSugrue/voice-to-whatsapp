@@ -1,10 +1,18 @@
 import express from "express";
-import { requestLogger } from "./lib/logger";
-import { port } from "./lib/config";
+import cors from "cors";
+import { logger, requestLogger } from "./lib/logger";
+import { allowedOrigins, port } from "./lib/config";
 import polishAudioRouter from "./routes/polish-audio";
 
 const app = express();
 
+const corsOptions: cors.CorsOptions = {
+  origin: allowedOrigins.length ? allowedOrigins : true,
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Authorization", "Content-Type"],
+};
+
+app.use(cors(corsOptions));
 app.use(requestLogger);
 
 app.get("/health", (_req, res) => {
@@ -23,5 +31,8 @@ app.use(
 );
 
 app.listen(port, () => {
-  console.log(`API listening on port ${port}`);
+  logger.info(
+    { port, allowedOrigins: allowedOrigins.length ? allowedOrigins : "all" },
+    "API listening",
+  );
 });
