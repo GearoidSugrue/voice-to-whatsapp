@@ -4,8 +4,11 @@ import type { RecorderState } from '../types'
 
 const props = defineProps<{
   state: RecorderState
-  canSubmit: boolean
+  hasAudio: boolean
+  hasAuth: boolean
   isSubmitting: boolean
+  isRecording: boolean
+  isProcessing: boolean
   error?: string | null
 }>()
 
@@ -21,6 +24,8 @@ const stateLabel = computed(() => {
       return 'Recording'
     case 'processing':
       return 'Processing'
+    case 'error':
+      return 'Error'
     default:
       return 'Idle'
   }
@@ -36,14 +41,20 @@ const stateLabel = computed(() => {
     <div v-if="error" class="alert">{{ error }}</div>
 
     <div class="controls">
-      <button class="primary" type="button" :disabled="state !== 'idle'" @click="emit('start')">
-        {{ state === 'recording' ? 'Recording...' : 'Start recording' }}
+      <button v-if="!isRecording && !isProcessing" class="primary" type="button" @click="emit('start')">
+        Start recording
       </button>
-      <button class="ghost" type="button" :disabled="state !== 'recording'" @click="emit('stop')">
+      <button v-if="isRecording" class="ghost" type="button" @click="emit('stop')">
         Stop
       </button>
-      <button class="ghost" type="button" :disabled="!canSubmit || isSubmitting" @click="emit('submit')">
-        {{ isSubmitting ? 'Sending...' : 'Send for polish' }}
+      <button
+        v-if="hasAudio && !isRecording && !isProcessing"
+        class="ghost"
+        type="button"
+        :disabled="!hasAuth || isSubmitting"
+        @click="emit('submit')"
+      >
+        {{ isSubmitting ? 'Sending...' : hasAuth ? 'Send for polish' : 'Add secret to send' }}
       </button>
     </div>
 

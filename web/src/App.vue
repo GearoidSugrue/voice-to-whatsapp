@@ -3,44 +3,28 @@ import { computed, ref } from 'vue'
 import RecorderPanel from './components/RecorderPanel.vue'
 import RecipientChooser from './components/RecipientChooser.vue'
 import OutputPanels from './components/OutputPanels.vue'
-import type { RecorderState, TranscriptResult } from './types'
+import type { RecorderState } from './types'
 import { useTheme } from './composables/useTheme'
 import { useRecorder } from './composables/useRecorder'
 import { useRecipient } from './composables/useRecipient'
-import { polishAudio } from './lib/apiClient'
+import { usePolisher } from './composables/usePolisher'
 
 const { theme, toggleTheme } = useTheme()
-const { state: recorderState, audioBlob, error: recorderError, startRecording, stopRecording } =
-  useRecorder()
+const { state: recorderState, audioBlob, error: recorderError, transition } = useRecorder()
 const { recipient } = useRecipient()
-const lastResult = ref<TranscriptResult>()
+const { lastResult, isSubmitting, apiError, submit } = usePolisher()
 const authToken = ref('')
-const isSubmitting = ref(false)
-const apiError = ref<string | null>(null)
 
-const canSubmit = computed(
-  () =>
-    !!audioBlob.value &&
-    !!authToken.value.trim() &&
-    recorderState.value !== 'recording' &&
-    !isSubmitting.value,
-)
+const isRecording = computed(() => recorderState.value === 'recording')
+const isProcessing = computed(() => recorderState.value === 'processing')
+const hasAudio = computed(() => !!audioBlob.value)
+const hasAuth = computed(() => !!authToken.value.trim())
 
 const submitAudio = async () => {
   if (!audioBlob.value || !authToken.value) return
-  apiError.value = null
-  isSubmitting.value = true
   recorderState.value = 'processing' as RecorderState
-  try {
-    const file = new File([audioBlob.value], 'audio.webm', { type: audioBlob.value.type })
-    const data = await polishAudio({ authToken: authToken.value, audio: file })
-    lastResult.value = data
-  } catch (err) {
-    apiError.value = err instanceof Error ? err.message : 'Failed to send audio'
-  } finally {
-    isSubmitting.value = false
-    recorderState.value = 'idle'
-  }
+  await submit(authToken.value, audioBlob.value)
+  recorderState.value = 'idle'
 }
 </script>
 
@@ -69,11 +53,14 @@ const submitAudio = async () => {
 
       <RecorderPanel
         :state="recorderState"
-        :can-submit="canSubmit"
+        :has-audio="hasAudio"
+        :has-auth="hasAuth"
         :is-submitting="isSubmitting"
+        :is-recording="isRecording"
+        :is-processing="isProcessing"
         :error="recorderError"
-        @start="startRecording"
-        @stop="stopRecording"
+        @start="transition('START')"
+        @stop="transition('STOP')"
         @submit="submitAudio"
       />
       <RecipientChooser v-model="recipient" />

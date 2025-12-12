@@ -1,5 +1,6 @@
 import { onBeforeUnmount, ref } from 'vue'
-import type { RecorderState } from '../types'
+import type { RecorderEvent, RecorderState } from '../types'
+import { recorderTransitions } from '../types'
 
 export function useRecorder() {
   const state = ref<RecorderState>('idle')
@@ -10,15 +11,32 @@ export function useRecorder() {
   let chunks: BlobPart[] = []
   let stream: MediaStream | null = null
 
-  const reset = () => {
-    audioBlob.value = null
-    error.value = null
-    chunks = []
+  const transition = (event: RecorderEvent) => {
+    const allowed = recorderTransitions[state.value]
+    if (!allowed.includes(event)) {
+      return
+    }
+    switch (state.value) {
+      case 'idle':
+        if (event === 'START') startInternal()
+        break;
+      case 'recording':
+        if (event === 'STOP') stopInternal()
+        if (event === 'FAIL') fail('Recording failed.')
+        break;
+      case 'processing':
+        if (event === 'RESET') reset()
+        if (event === 'FAIL') fail('Processing failed.')
+        break;
+      case 'error':
+        if (event === 'RESET') reset()
+        break;
+    }
   }
 
-  const startRecording = async () => {
+  const startInternal = async () => {
     if (!navigator.mediaDevices?.getUserMedia) {
-      error.value = 'Audio recording is not supported in this browser.'
+      fail('Audio recording is not supported in this browser.')
       return
     }
     error.value = null
@@ -40,15 +58,28 @@ export function useRecorder() {
       mediaRecorder.start()
       state.value = 'recording'
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to access microphone.'
+      fail(err instanceof Error ? err.message : 'Failed to access microphone.')
       stopStream()
     }
   }
 
-  const stopRecording = () => {
+  const stopInternal = () => {
     if (state.value !== 'recording') return
     state.value = 'processing'
     mediaRecorder?.stop()
+  }
+
+  const reset = () => {
+    audioBlob.value = null
+    error.value = null
+    chunks = []
+    state.value = 'idle'
+  }
+
+  const fail = (message: string) => {
+    error.value = message
+    state.value = 'error'
+    stopStream()
   }
 
   const stopStream = () => {
@@ -59,7 +90,7 @@ export function useRecorder() {
   }
 
   onBeforeUnmount(() => {
-    stopRecording()
+    stopInternal()
     stopStream()
   })
 
@@ -67,8 +98,7 @@ export function useRecorder() {
     state,
     audioBlob,
     error,
-    startRecording,
-    stopRecording,
+    transition,
     reset,
   }
 }

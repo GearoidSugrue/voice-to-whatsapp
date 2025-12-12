@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { TranscriptResult } from '../types'
+import { useWhatsappLink } from '../composables/useWhatsappLink'
 
 const props = defineProps<{
   result?: TranscriptResult
   recipient: string
 }>()
 
-const whatsappLink = computed(() => {
-  if (!props.result || !props.recipient) return ''
-  const encoded = encodeURIComponent(props.result.polished)
-  const number = props.recipient.replace(/\s+/g, '')
-  return `https://wa.me/${number}?text=${encoded}`
-})
+const whatsappLink = useWhatsappLink(props.recipient, props.result)
 </script>
 
 <template>
