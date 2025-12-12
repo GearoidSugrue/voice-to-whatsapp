@@ -7,6 +7,7 @@ const props = defineProps<{
   hasAudio: boolean
   hasAuth: boolean
   isSubmitting: boolean
+  hasRecipient: boolean
   isRecording: boolean
   isProcessing: boolean
   error?: string | null
@@ -30,6 +31,13 @@ const stateLabel = computed(() => {
       return 'Idle'
   }
 })
+
+const sendLabel = computed(() => {
+  if (props.isSubmitting) return 'Sending...'
+  if (!props.hasAuth) return 'Add secret to send'
+  if (!props.hasRecipient) return 'Add recipient'
+  return 'Send for polish'
+})
 </script>
 
 <template>
@@ -51,10 +59,10 @@ const stateLabel = computed(() => {
         v-if="hasAudio && !isRecording && !isProcessing"
         class="ghost"
         type="button"
-        :disabled="!hasAuth || isSubmitting"
+        :disabled="!hasAuth || !hasRecipient || isSubmitting"
         @click="emit('submit')"
       >
-        {{ isSubmitting ? 'Sending...' : hasAuth ? 'Send for polish' : 'Add secret to send' }}
+        {{ sendLabel }}
       </button>
     </div>
 

@@ -8,22 +8,25 @@ export type PolishAudioResponse = {
 export type ApiError = {
   error: string
 }
- 
+
 type RequestOptions = {
   signal?: AbortSignal
   authToken: string
   audio: File | Blob
+  baseUrl?: string
 }
 
 /**
  * Prepare a multipart request for /polish-audio.
  * Caller supplies the audio blob/file and the auth token (POLISHER_SECRET).
  */
-export async function polishAudio({ authToken, audio, signal }: RequestOptions) {
+export async function polishAudio({ authToken, audio, signal, baseUrl }: RequestOptions) {
   const form = new FormData()
   form.append('audio', audio)
 
-  const res = await fetch(`${apiBaseUrl}/polish-audio`, {
+  const url = `${(baseUrl ?? apiBaseUrl) || ''}/polish-audio`
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${authToken}`,

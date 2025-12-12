@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import RecorderPanel from './components/RecorderPanel.vue'
 import RecipientChooser from './components/RecipientChooser.vue'
 import OutputPanels from './components/OutputPanels.vue'
@@ -8,17 +8,19 @@ import { useTheme } from './composables/useTheme'
 import { useRecorder } from './composables/useRecorder'
 import { useRecipient } from './composables/useRecipient'
 import { usePolisher } from './composables/usePolisher'
+import { useAuthToken } from './composables/useAuthToken'
 
 const { theme, toggleTheme } = useTheme()
 const { state: recorderState, audioBlob, error: recorderError, transition } = useRecorder()
 const { recipient } = useRecipient()
 const { lastResult, isSubmitting, apiError, submit } = usePolisher()
-const authToken = ref('')
+const { authToken } = useAuthToken()
 
 const isRecording = computed(() => recorderState.value === 'recording')
 const isProcessing = computed(() => recorderState.value === 'processing')
 const hasAudio = computed(() => !!audioBlob.value)
 const hasAuth = computed(() => !!authToken.value.trim())
+const hasRecipient = computed(() => !!recipient.value.trim())
 
 const submitAudio = async () => {
   if (!audioBlob.value || !authToken.value) return
@@ -47,7 +49,9 @@ const submitAudio = async () => {
       <section class="panel auth">
         <p class="eyebrow">Auth</p>
         <h3>Polisher secret</h3>
-        <p class="muted">Bearer token required for API calls.</p>
+        <p class="muted">
+          Bearer token required for API calls. Saved locally for convenience.
+        </p>
         <input v-model="authToken" type="password" name="auth" placeholder="POLISHER_SECRET" />
       </section>
 
@@ -55,6 +59,7 @@ const submitAudio = async () => {
         :state="recorderState"
         :has-audio="hasAudio"
         :has-auth="hasAuth"
+        :has-recipient="hasRecipient"
         :is-submitting="isSubmitting"
         :is-recording="isRecording"
         :is-processing="isProcessing"
