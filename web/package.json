@@ -16,6 +16,7 @@
     "@types/node": "^24.10.1",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitest/ui": "^2.1.4",
+    "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "jsdom": "^27.2.0",
     "msw": "^2.7.3",

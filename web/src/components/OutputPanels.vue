@@ -23,7 +23,7 @@ const whatsappLink = useWhatsappLink(props.recipient, props.result)
         <p class="label">Polished</p>
         <p>{{ result.polished }}</p>
       </div>
-      <a v-if="whatsappLink" class="cta" :href="whatsappLink" target="_blank" rel="noreferrer">
+      <a v-if="whatsappLink" class="btn btn-primary link-cta" :href="whatsappLink" target="_blank" rel="noreferrer">
         Open in WhatsApp
       </a>
     </div>
@@ -56,18 +56,11 @@ const whatsappLink = useWhatsappLink(props.recipient, props.result)
   color: var(--muted);
 }
 
-.cta {
+.link-cta {
   margin-top: 6px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
   width: fit-content;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 </style>

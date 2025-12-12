@@ -46,12 +46,40 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-a {
+.link {
   color: var(--accent-strong);
+  text-decoration: none;
 }
 
-button {
+.btn {
   font: inherit;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-primary {
+  border: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #fff;
+  padding: 12px 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: 10px 14px;
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .app-shell {
@@ -146,6 +174,10 @@ button {
 
 .auth input {
   width: 100%;
+}
+
+.input {
+  width: 100%;
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid var(--border);
@@ -156,6 +188,14 @@ button {
 .auth input:focus {
   outline: 2px solid var(--accent);
   border-color: var(--accent);
+}
+
+.hint ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  display: grid;
+  gap: 6px;
 }
 
 @media (max-width: 900px) {
@@ -177,5 +217,9 @@ button {
 
   .panel {
     padding: 16px;
+  }
+
+  .top-bar h1 {
+    font-size: 20px;
   }
 }

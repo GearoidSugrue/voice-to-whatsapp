@@ -75,6 +75,15 @@ const submitAudio = async () => {
         <p class="eyebrow">Error</p>
         <p>{{ apiError }}</p>
       </div>
+
+      <div v-if="!hasAuth || !hasRecipient || !hasAudio" class="panel hint">
+        <p class="eyebrow">Quick tips</p>
+        <ul>
+          <li v-if="!hasAuth">Add your polisher secret to enable sending.</li>
+          <li v-if="!hasRecipient">Set a recipient so the WhatsApp link can be built.</li>
+          <li v-if="!hasAudio">Record something to activate the send button.</li>
+        </ul>
+      </div>
     </main>
   </div>
 </template>

@@ -49,15 +49,15 @@ const sendLabel = computed(() => {
     <div v-if="error" class="alert">{{ error }}</div>
 
     <div class="controls">
-      <button v-if="!isRecording && !isProcessing" class="primary" type="button" @click="emit('start')">
+      <button v-if="!isRecording && !isProcessing" class="btn btn-primary" type="button" @click="emit('start')">
         Start recording
       </button>
-      <button v-if="isRecording" class="ghost" type="button" @click="emit('stop')">
+      <button v-if="isRecording" class="btn btn-ghost" type="button" @click="emit('stop')">
         Stop
       </button>
       <button
         v-if="hasAudio && !isRecording && !isProcessing"
-        class="ghost"
+        class="btn btn-ghost"
         type="button"
         :disabled="!hasAuth || !hasRecipient || isSubmitting"
         @click="emit('submit')"
@@ -83,21 +83,6 @@ const sendLabel = computed(() => {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-}
-
-.primary {
-  border: none;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #fff;
-  padding: 12px 16px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
-}
-
-.primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
 .muted {
