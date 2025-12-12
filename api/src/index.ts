@@ -14,7 +14,6 @@ app.use(
   // Simple error handler to keep early scaffolding predictable
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-    // Log and avoid leaking details to callers
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
   },

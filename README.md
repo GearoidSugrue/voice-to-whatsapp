@@ -7,13 +7,14 @@ Backend and frontend monorepo. Current state: backend scaffold with Express + Ty
 ```bash
 cd api
 npm install
-POLISHER_SECRET=your-secret npm run dev
+POLISHER_SECRET=your-secret OPENAI_API_KEY=your-key npm run dev
 ```
 
 Routes:
 - `GET /health` → `{ status: "ok" }`
-- `POST /polish-audio` (multipart `audio`, `Authorization: Bearer <POLISHER_SECRET>`) → stubbed `{ transcript, polished }`
+- `POST /polish-audio` (multipart `audio`, `Authorization: Bearer <POLISHER_SECRET>`) → `{ transcript, polished }`
 
 Environment:
 - `POLISHER_SECRET` (required)
+- `OPENAI_API_KEY` (required)
 - `PORT` (optional, defaults to 3001)

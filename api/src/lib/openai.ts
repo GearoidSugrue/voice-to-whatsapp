@@ -1,0 +1,35 @@
+// Simple OpenAI client wrapper keeping models centralized.
+import OpenAI from "openai";
+import { getOpenAiKey } from "./secrets";
+
+const client = new OpenAI({ apiKey: getOpenAiKey() });
+
+export const models = {
+  transcribe: "gpt-4o-transcribe",
+  polish: "gpt-4o-mini",
+} as const;
+
+export async function transcribeAudio(audio: Buffer, mimeType: string) {
+  const response = await client.audio.transcriptions.create({
+    file: new File([new Uint8Array(audio)], "audio", { type: mimeType }),
+    model: models.transcribe,
+  });
+  return response.text;
+}
+
+export async function polishMessage(rawText: string) {
+  const response = await client.responses.create({
+    model: models.polish,
+    input: [
+      { role: "system", content: polishSystemPrompt },
+      { role: "user", content: rawText },
+    ],
+  });
+
+  const firstText = response.output_text ?? "";
+  return firstText.trim();
+}
+
+const polishSystemPrompt =
+  "Fix typos and grammar, improve clarity, and keep the tone casual and natural. " +
+  "Do not add new information. Keep it concise. Return only the polished text.";
