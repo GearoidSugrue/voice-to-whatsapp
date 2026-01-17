@@ -2,11 +2,13 @@
 import { computed } from 'vue'
 import type { RecorderState } from '../types'
 import { apiBaseUrl } from '../lib/apiConfig'
+import { useDebugChecks } from '../composables/useDebugChecks'
 
 const props = defineProps<{
   recorderState: RecorderState
   audioBlob: Blob | null
   apiError: string | null
+  authToken: string
 }>()
 
 const audioInfo = computed(() => {
@@ -14,6 +16,8 @@ const audioInfo = computed(() => {
   const sizeKb = Math.round((props.audioBlob.size / 1024) * 10) / 10
   return `${props.audioBlob.type || 'unknown'} · ${sizeKb} KB`
 })
+
+const { checks, runModelsCheck, runTranscriptionCheck } = useDebugChecks(() => props.authToken)
 </script>
 
 <template>
@@ -30,10 +34,27 @@ const audioInfo = computed(() => {
       <li v-else><strong>Last API error:</strong> none</li>
     </ul>
 
-    <p class="muted small">
-      Quick checks (requires Authorization header):
-      <code>/health/openai</code> and <code>/health/openai/transcription</code>
-    </p>
+    <div class="checks">
+      <div class="check-row">
+        <button type="button" class="btn btn-ghost" @click="runModelsCheck" :disabled="checks.models.state === 'loading'">
+          {{ checks.models.state === 'loading' ? 'Checking…' : 'Ping OpenAI models' }}
+        </button>
+        <span class="status" :data-state="checks.models.state">{{ checks.models.message || 'Idle' }}</span>
+      </div>
+      <div class="check-row">
+        <button
+          type="button"
+          class="btn btn-ghost"
+          @click="runTranscriptionCheck"
+          :disabled="checks.transcription.state === 'loading'"
+        >
+          {{ checks.transcription.state === 'loading' ? 'Transcribing…' : 'Test transcription' }}
+        </button>
+        <span class="status" :data-state="checks.transcription.state">
+          {{ checks.transcription.message || 'Idle' }}
+        </span>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -64,5 +85,32 @@ code {
   padding: 2px 6px;
   border-radius: 6px;
   font-size: 12px;
+}
+
+.checks {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.status[data-state='ok'] {
+  color: #16a34a;
+}
+
+.status[data-state='error'] {
+  color: #dc2626;
 }
 </style>
