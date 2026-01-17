@@ -1,12 +1,10 @@
 import { reactive } from 'vue'
 import { apiBaseUrl } from '../lib/apiConfig'
 
-const DEFAULT_TRANSCRIBE_MODEL = 'gpt-4o-transcribe'
-
 type CheckKey = 'models' | 'transcription'
 type CheckState = { state: 'idle' | 'loading' | 'ok' | 'error'; message: string }
 
-export function useDebugChecks(getAuthToken: () => string) {
+export function useDebugChecks(getAuthToken: () => string, defaultTranscribeModel = 'gpt-4o-transcribe') {
   const checks = reactive<Record<CheckKey, CheckState>>({
     models: { state: 'idle', message: '' },
     transcription: { state: 'idle', message: '' },
@@ -49,7 +47,7 @@ export function useDebugChecks(getAuthToken: () => string) {
   return {
     checks,
     runModelsCheck: () => runCheck('models'),
-    runTranscriptionCheck: (model?: string) => runCheck('transcription', model ?? DEFAULT_TRANSCRIBE_MODEL),
+    runTranscriptionCheck: (model?: string) => runCheck('transcription', model ?? defaultTranscribeModel),
   }
 }
 

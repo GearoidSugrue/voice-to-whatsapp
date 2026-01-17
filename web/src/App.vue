@@ -18,6 +18,10 @@ const { recipient } = useRecipient()
 const { lastResult, isSubmitting, apiError, submit } = usePolisher()
 const { authToken } = useAuthToken()
 const { isDebug } = useDebugFlag()
+const debugModel = computed(() => {
+  const params = new URLSearchParams(window.location.search)
+  return params.get('model')
+})
 
 const isRecording = computed(() => recorderState.value === 'recording')
 const isProcessing = computed(() => recorderState.value === 'processing')
@@ -57,7 +61,14 @@ const submitAudio = async () => {
         <input v-model="authToken" type="password" name="auth" placeholder="POLISHER_SECRET" />
       </section>
 
-      <DebugPanel v-if="isDebug" :recorder-state="recorderState" :audio-blob="audioBlob" :api-error="apiError" />
+      <DebugPanel
+        v-if="isDebug"
+        :recorder-state="recorderState"
+        :audio-blob="audioBlob"
+        :api-error="apiError"
+        :auth-token="authToken"
+        :debug-model="debugModel"
+      />
 
       <RecorderPanel
         :state="recorderState"

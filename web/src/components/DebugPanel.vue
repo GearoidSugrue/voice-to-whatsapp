@@ -2,11 +2,14 @@
 import { computed } from 'vue'
 import type { RecorderState } from '../types'
 import { apiBaseUrl } from '../lib/apiConfig'
+import { useDebugChecks } from '../composables/useDebugChecks'
 
 const props = defineProps<{
   recorderState: RecorderState
   audioBlob: Blob | null
   apiError: string | null
+  authToken: string
+  debugModel?: string | null
 }>()
 
 const audioInfo = computed(() => {
@@ -14,6 +17,12 @@ const audioInfo = computed(() => {
   const sizeKb = Math.round((props.audioBlob.size / 1024) * 10) / 10
   return `${props.audioBlob.type || 'unknown'} · ${sizeKb} KB`
 })
+
+const selectedModel = computed(() => props.debugModel?.trim() || undefined)
+const { checks, runModelsCheck, runTranscriptionCheck } = useDebugChecks(
+  () => props.authToken,
+  selectedModel.value,
+)
 </script>
 
 <template>
@@ -28,12 +37,30 @@ const audioInfo = computed(() => {
       <li><strong>API base URL:</strong> {{ apiBaseUrl || '(same origin)' }}</li>
       <li v-if="apiError"><strong>Last API error:</strong> {{ apiError }}</li>
       <li v-else><strong>Last API error:</strong> none</li>
+      <li><strong>Transcription model:</strong> {{ selectedModel || 'default (gpt-4o-transcribe)' }}</li>
     </ul>
 
-    <p class="muted small">
-      Quick checks (requires Authorization header):
-      <code>/health/openai</code> and <code>/health/openai/transcription</code>
-    </p>
+    <div class="checks">
+      <div class="check-row">
+        <button type="button" class="btn btn-ghost" @click="runModelsCheck" :disabled="checks.models.state === 'loading'">
+          {{ checks.models.state === 'loading' ? 'Checking…' : 'Ping OpenAI models' }}
+        </button>
+        <span class="status" :data-state="checks.models.state">{{ checks.models.message || 'Idle' }}</span>
+      </div>
+      <div class="check-row">
+        <button
+          type="button"
+          class="btn btn-ghost"
+          @click="runTranscriptionCheck(selectedModel || undefined)"
+          :disabled="checks.transcription.state === 'loading'"
+        >
+          {{ checks.transcription.state === 'loading' ? 'Transcribing…' : 'Test transcription' }}
+        </button>
+        <span class="status" :data-state="checks.transcription.state">
+          {{ checks.transcription.message || 'Idle' }}
+        </span>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -55,14 +82,30 @@ const audioInfo = computed(() => {
   color: var(--muted);
 }
 
-.small {
-  font-size: 13px;
+.checks {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-code {
-  background: rgba(0, 0, 0, 0.04);
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 12px;
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.status[data-state='ok'] {
+  color: #16a34a;
+}
+
+.status[data-state='error'] {
+  color: #dc2626;
 }
 </style>
