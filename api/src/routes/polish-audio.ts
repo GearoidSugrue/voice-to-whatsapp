@@ -5,7 +5,10 @@ import { logger } from "../lib/logger";
 import { polishMessage, transcribeAudio } from "../lib/openai";
 
 const router = Router();
-const upload = multer({ limits: { fileSize: 8 * 1024 * 1024 } }); // 8MB cap to keep request small
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024 },
+}); // 8MB cap to keep request small
 
 router.post(
   "/polish-audio",
@@ -20,8 +23,21 @@ router.post(
         return;
       }
 
+      if (!req.file.buffer || req.file.buffer.length === 0) {
+        res.status(400).json({ error: "Uploaded audio is empty" });
+        return;
+      }
+
       const afterValidationTime = Date.now();
-      logger.info({ elapsedMs: afterValidationTime - startTime }, "polish-audio: after validation");
+      logger.info(
+        {
+          elapsedMs: afterValidationTime - startTime,
+          size: req.file.size,
+          mimeType: req.file.mimetype,
+          filename: req.file.originalname,
+        },
+        "polish-audio: after validation",
+      );
 
       const beforeTranscribeTime = Date.now();
       logger.info({ elapsedMs: beforeTranscribeTime - startTime }, "polish-audio: before transcribe");
@@ -53,6 +69,7 @@ router.post(
 
       res.json({ transcript, polished });
     } catch (err) {
+      logger.error({ err }, "polish-audio failed");
       next(err);
     }
   },
