@@ -57,7 +57,13 @@ const submitAudio = async () => {
         <input v-model="authToken" type="password" name="auth" placeholder="POLISHER_SECRET" />
       </section>
 
-      <DebugPanel v-if="isDebug" :recorder-state="recorderState" :audio-blob="audioBlob" :api-error="apiError" />
+      <DebugPanel
+        v-if="isDebug"
+        :recorder-state="recorderState"
+        :audio-blob="audioBlob"
+        :api-error="apiError"
+        :auth-token="authToken"
+      />
 
       <RecorderPanel
         :state="recorderState"
