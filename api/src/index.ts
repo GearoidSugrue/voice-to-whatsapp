@@ -30,9 +30,13 @@ app.use(
   },
 );
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   logger.info(
     { port, allowedOrigins: allowedOrigins.length ? allowedOrigins : "all" },
     "API listening",
   );
 });
+
+server.requestTimeout = 0;
+server.headersTimeout = 120_000;
+server.keepAliveTimeout = 65_000;
