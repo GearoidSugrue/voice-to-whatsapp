@@ -2,7 +2,11 @@
 import OpenAI, { toFile } from "openai";
 import { getOpenAiKey } from "./secrets";
 
-const client = new OpenAI({ apiKey: getOpenAiKey() });
+const client = new OpenAI({
+  apiKey: getOpenAiKey(),
+  timeout: 120_000,
+  maxRetries: 2,
+});
 
 export const models = {
   transcribe: "gpt-4o-transcribe",
