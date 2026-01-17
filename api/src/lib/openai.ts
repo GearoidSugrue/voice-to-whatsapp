@@ -20,6 +20,7 @@ export async function transcribeAudio(
   audio: Buffer,
   mimeType: string,
   filename?: string,
+  modelOverride?: string,
 ) {
   const safeMime = normalizeMime(mimeType);
   const file = await toFile(audio, filename ?? defaultFilename(safeMime), {
@@ -29,7 +30,7 @@ export async function transcribeAudio(
   try {
     const response = await client.audio.transcriptions.create({
       file,
-      model: models.transcribe,
+      model: modelOverride || models.transcribe,
     });
     return response.text;
   } catch (err) {

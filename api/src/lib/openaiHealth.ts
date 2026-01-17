@@ -1,4 +1,4 @@
-import { client, transcribeAudio } from "./openai";
+import { client, models as defaultModels, transcribeAudio } from "./openai";
 import { makeSilenceWav } from "./openaiShared";
 
 export async function checkOpenAiConnectivity() {
@@ -9,7 +9,8 @@ export async function checkOpenAiConnectivity() {
   };
 }
 
-export async function transcribeTestAudio() {
+export async function transcribeTestAudio(modelOverride?: string) {
   const silence = makeSilenceWav();
-  return transcribeAudio(silence, "audio/wav", "silence.wav");
+  const modelToUse = modelOverride?.trim() || defaultModels.transcribe;
+  return transcribeAudio(silence, "audio/wav", "silence.wav", modelToUse);
 }

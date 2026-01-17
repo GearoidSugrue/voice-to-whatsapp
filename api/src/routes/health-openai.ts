@@ -15,10 +15,11 @@ router.get("/health/openai", authMiddleware, async (_req, res, next) => {
   }
 });
 
-router.get("/health/openai/transcription", authMiddleware, async (_req, res, next) => {
+router.get("/health/openai/transcription", authMiddleware, async (req, res, next) => {
   try {
-    const transcript = await transcribeTestAudio();
-    res.json({ ok: true, transcript });
+    const model = typeof req.query.model === "string" ? req.query.model : undefined;
+    const transcript = await transcribeTestAudio(model);
+    res.json({ ok: true, model: model ?? "default", transcript });
   } catch (err) {
     logger.error({ err }, "openai test transcription failed");
     next(err);
