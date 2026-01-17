@@ -9,12 +9,15 @@ import { useRecorder } from './composables/useRecorder'
 import { useRecipient } from './composables/useRecipient'
 import { usePolisher } from './composables/usePolisher'
 import { useAuthToken } from './composables/useAuthToken'
+import { useDebugFlag } from './composables/useDebugFlag'
+import DebugPanel from './components/DebugPanel.vue'
 
 const { theme, toggleTheme } = useTheme()
 const { state: recorderState, audioBlob, error: recorderError, transition } = useRecorder()
 const { recipient } = useRecipient()
 const { lastResult, isSubmitting, apiError, submit } = usePolisher()
 const { authToken } = useAuthToken()
+const { isDebug } = useDebugFlag()
 
 const isRecording = computed(() => recorderState.value === 'recording')
 const isProcessing = computed(() => recorderState.value === 'processing')
@@ -53,6 +56,8 @@ const submitAudio = async () => {
         </p>
         <input v-model="authToken" type="password" name="auth" placeholder="POLISHER_SECRET" />
       </section>
+
+      <DebugPanel v-if="isDebug" :recorder-state="recorderState" :audio-blob="audioBlob" :api-error="apiError" />
 
       <RecorderPanel
         :state="recorderState"

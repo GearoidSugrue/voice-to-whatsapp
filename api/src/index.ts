@@ -3,6 +3,7 @@ import cors from "cors";
 import { logger, requestLogger } from "./lib/logger";
 import { allowedOrigins, port } from "./lib/config";
 import polishAudioRouter from "./routes/polish-audio";
+import healthOpenAiRouter from "./routes/health-openai";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+app.use(healthOpenAiRouter);
 app.use(polishAudioRouter);
 
 app.use(
