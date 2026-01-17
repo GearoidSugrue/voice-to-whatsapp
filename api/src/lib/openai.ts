@@ -1,5 +1,5 @@
 // Simple OpenAI client wrapper keeping models centralized.
-import OpenAI from "openai";
+import OpenAI, { toFile } from "openai";
 import { getOpenAiKey } from "./secrets";
 
 const client = new OpenAI({ apiKey: getOpenAiKey() });
@@ -9,9 +9,16 @@ export const models = {
   polish: "gpt-4o-mini",
 } as const;
 
-export async function transcribeAudio(audio: Buffer, mimeType: string) {
+export async function transcribeAudio(
+  audio: Buffer,
+  mimeType: string,
+  filename?: string,
+) {
+  const file = await toFile(audio, filename ?? "audio.webm", {
+    type: mimeType,
+  });
   const response = await client.audio.transcriptions.create({
-    file: new File([new Uint8Array(audio)], "audio", { type: mimeType }),
+    file,
     model: models.transcribe,
   });
   return response.text;

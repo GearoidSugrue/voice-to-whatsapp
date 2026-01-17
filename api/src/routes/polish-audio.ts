@@ -18,7 +18,11 @@ router.post(
       }
 
       const mime = req.file.mimetype || "audio/wav";
-      const transcript = await transcribeAudio(req.file.buffer, mime);
+      const transcript = await transcribeAudio(
+        req.file.buffer,
+        mime,
+        req.file.originalname,
+      );
       const polished = await polishMessage(transcript);
 
       res.json({ transcript, polished });
